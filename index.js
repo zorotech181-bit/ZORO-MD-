@@ -3,7 +3,9 @@ const {
     default: makeWASocket, 
     useMultiFileAuthState, 
     delay, 
-    DisconnectReason 
+    DisconnectReason,
+    Browsers,
+    makeCacheableSignalKeyStore
 } = require('@whiskeysockets/baileys');
 const pino = require('pino');
 const fs = require('fs');
@@ -21,18 +23,26 @@ if (!fs.existsSync(SESSIONS_DIR)) {
 
 const activeBots = new Map();
 
-// Fonction principale de gestion du bot
 async function startBotInstance(num, res = null) {
     const userSessionDir = path.join(SESSIONS_DIR, 'bot_' + num);
-
     const { state, saveCreds } = await useMultiFileAuthState(userSessionDir);
 
+    const logger = pino({ level: 'silent' });
+
+    // Configuration optimisée pour un traitement instantané en RAM
     const sock = makeWASocket({
-        auth: state,
+        auth: {
+            creds: state.creds,
+            keys: makeCacheableSignalKeyStore(state.keys, logger)
+        },
         printQRInTerminal: false,
-        logger: pino({ level: 'silent' }),
-        browser: ['Ubuntu', 'Chrome', '20.0.04'],
-        syncFullHistory: false
+        logger: logger,
+        browser: Browsers.ubuntu("Chrome"),
+        syncFullHistory: false,
+        markOnlineOnConnect: false,
+        defaultQueryTimeoutMs: undefined,
+        connectTimeoutMs: 60000,
+        keepAliveIntervalMs: 10000
     });
 
     sock.ev.on('creds.update', saveCreds);
@@ -42,25 +52,25 @@ async function startBotInstance(num, res = null) {
     sock.ev.on('connection.update', async (update) => {
         const { connection, qr, lastDisconnect } = update;
 
-        // Première étape : délivrer le code à 8 chiffres au site web
+        // Délivrer le code à 8 chiffres au site web
         if (qr && !codeSent && res && !res.headersSent) {
             codeSent = true;
             try {
                 await delay(1500);
                 const code = await sock.requestPairingCode(num);
-                console.log(`✅ CODE GÉNÉRÉ : ${code}`);
+                console.log(`✅ CODE DISPONIBLE : ${code}`);
                 return res.json({ code: code });
             } catch (err) {
-                console.error("Erreur génération code :", err);
+                console.error("Erreur code :", err);
                 if (!res.headersSent) {
-                    return res.status(500).json({ error: "Erreur WhatsApp, veuillez réessayer !" });
+                    return res.status(500).json({ error: "Erreur WhatsApp, réessayez !" });
                 }
             }
         }
 
-        // Étape finale : Connexion établie avec succès !
+        // Connexion réussie
         if (connection === 'open') {
-            console.log(`🎉🎉 LE BOT +${num} EST CONNECTÉ AVEC SUCCÈS À WHATSAPP !`);
+            console.log(`🎉🎉 LE BOT +${num} EST CONNECTÉ AVEC SUCCÈS !`);
             activeBots.set(num, sock);
 
             try {
@@ -70,20 +80,18 @@ async function startBotInstance(num, res = null) {
             } catch (e) {}
         }
 
-        // Gestion de la coupure et du signal 515 (Restart Required)
+        // Reconnexion automatique (gestion du code 515)
         if (connection === 'close') {
             const statusCode = lastDisconnect?.error?.output?.statusCode;
-            console.log(`⚠️ Connexion fermée avec le code : ${statusCode}`);
+            console.log(`Connexion fermée, code : ${statusCode}`);
             activeBots.delete(num);
 
-            // Si l'utilisateur n'a pas appuyé manuellement sur "Déconnecter", on redémarre immédiatement !
             if (statusCode !== DisconnectReason.loggedOut) {
-                console.log(`🔄 Reconnexion automatique pour +${num} afin de finaliser l'association...`);
+                console.log(`🔄 Reconnexion automatique pour +${num}...`);
                 setTimeout(() => {
-                    startBotInstance(num); // Relance le socket sans écraser les clés enregistrées
+                    startBotInstance(num);
                 }, 2000);
             } else {
-                console.log(`❌ L'utilisateur s'est déconnecté manuellement (+${num})`);
                 fs.rmSync(userSessionDir, { recursive: true, force: true });
             }
         }
@@ -98,7 +106,7 @@ async function startBotInstance(num, res = null) {
             const body = m.message.conversation || m.message.extendedTextMessage?.text || "";
 
             if (body === '.ping') {
-                await sock.sendMessage(from, { text: '🏓 *PONG !* ZORO-MD est ultra rapide et connecté !' }, { quoted: m });
+                await sock.sendMessage(from, { text: '🏓 *PONG !* ZORO-MD est en ligne et ultra rapide !' }, { quoted: m });
             }
             if (body === '.menu') {
                 await sock.sendMessage(from, { text: `⚡ *ZORO-MD* ⚡\n\n- *.ping*\n- *.menu*` }, { quoted: m });
@@ -107,14 +115,12 @@ async function startBotInstance(num, res = null) {
     });
 }
 
-// Route appelée par le site web
 app.get('/pair', async (req, res) => {
     let num = req.query.number;
-    if (!num) return res.status(400).json({ error: "Numéro de téléphone manquant !" });
+    if (!num) return res.status(400).json({ error: "Veuillez entrer un numéro valide !" });
 
     num = num.replace(/[^0-9]/g, '');
 
-    // Réinitialise uniquement lorsqu'une nouvelle demande de code est faite sur le site
     const userSessionDir = path.join(SESSIONS_DIR, 'bot_' + num);
     if (fs.existsSync(userSessionDir)) {
         fs.rmSync(userSessionDir, { recursive: true, force: true });

@@ -1,145 +1,513 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zoro MD - Site de Jumelage</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            background: #0b0f19;
-            color: #f8fafc;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .container {
-            background: #151d30;
-            border: 1px solid #1e293b;
-            padding: 35px 25px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-            max-width: 420px;
-            width: 100%;
-            text-align: center;
-        }
-        h1 { font-size: 24px; color: #38bdf8; margin-bottom: 8px; }
-        p { font-size: 14px; color: #94a3b8; line-height: 1.5; }
-        .input-group { margin: 25px 0 15px; text-align: left; }
-        label { font-size: 13px; color: #cbd5e1; margin-bottom: 5px; display: block; }
-        input {
-            width: 100%;
-            padding: 14px;
-            border-radius: 10px;
-            border: 1px solid #334155;
-            background: #0b0f19;
-            color: #fff;
-            font-size: 16px;
-            outline: none;
-        }
-        input:focus { border-color: #38bdf8; }
-        button {
-            width: 100%;
-            padding: 14px;
-            border-radius: 10px;
-            border: none;
-            background: #38bdf8;
-            color: #0b0f19;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        button:hover { background: #0284c7; }
-        button:disabled { background: #475569; cursor: not-allowed; }
-        #codeBox {
-            display: none;
-            margin-top: 25px;
-            padding: 18px;
-            background: #0b0f19;
-            border: 2px dashed #38bdf8;
-            border-radius: 12px;
-        }
-        .code-display {
-            font-size: 28px;
-            letter-spacing: 5px;
-            font-weight: 800;
-            color: #4ade80;
-            margin: 10px 0;
-            user-select: all;
-        }
-        .copy-btn {
-            background: #334155;
-            color: white;
-            font-size: 13px;
-            padding: 8px 15px;
-            margin-top: 5px;
-            border-radius: 6px;
-            width: auto;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PAIRING CENTER - ZORO-MD</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #060216;
+      background-image: 
+        radial-gradient(ellipse at top, #240a5e 0%, #060216 70%),
+        linear-gradient(to bottom, rgba(6, 2, 22, 0.7), #060216);
+      color: #fff;
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 15px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Gri Néon retro nan fon an */
+    body::before {
+      content: "";
+      position: fixed;
+      bottom: -150px;
+      left: -50%;
+      width: 200%;
+      height: 60%;
+      background: 
+        linear-gradient(rgba(0, 242, 254, 0.15) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 242, 254, 0.15) 1px, transparent 1px);
+      background-size: 40px 40px;
+      transform: perspective(300px) rotateX(65deg);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 450px;
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    /* Kat Prensipal la */
+    .card {
+      background: rgba(13, 8, 38, 0.85);
+      border: 1.5px solid #bd00ff;
+      border-radius: 28px;
+      padding: 30px 22px;
+      box-shadow: 0 0 35px rgba(189, 0, 255, 0.35), inset 0 0 20px rgba(0, 242, 254, 0.1);
+      backdrop-filter: blur(12px);
+      margin-bottom: 20px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(0, 242, 254, 0.08);
+      border: 1px solid #00f2fe;
+      color: #00f2fe;
+      padding: 5px 16px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-family: 'Orbitron', sans-serif;
+      letter-spacing: 2.5px;
+      margin-bottom: 15px;
+    }
+
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 38px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      background: linear-gradient(90deg, #ff007a, #00f2fe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      color: #a4a4c7;
+      font-size: 15px;
+      letter-spacing: 0.5px;
+      margin-bottom: 25px;
+    }
+
+    .input-label {
+      color: #00f2fe;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-align: left;
+      margin-bottom: 8px;
+    }
+
+    .input-box {
+      background: #090620;
+      border: 1.5px solid #00f2fe;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      padding: 12px 18px;
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
+      margin-bottom: 8px;
+    }
+
+    .input-box span {
+      color: #ff007a;
+      font-size: 22px;
+      font-weight: bold;
+      margin-right: 12px;
+    }
+
+    .input-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 18px;
+      letter-spacing: 2px;
+      width: 100%;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #7979a3;
+      text-align: left;
+      line-height: 1.4;
+      margin-bottom: 18px;
+    }
+
+    .checkbox-container {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      text-align: left;
+      font-size: 13px;
+      color: #d1d1eb;
+      margin-bottom: 22px;
+      cursor: pointer;
+    }
+
+    .checkbox-container input {
+      accent-color: #00f2fe;
+      width: 16px;
+      height: 16px;
+      margin-top: 2px;
+    }
+
+    .btn {
+      width: 100%;
+      background: linear-gradient(90deg, #d900ff, #7000ff);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      padding: 16px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      cursor: pointer;
+      box-shadow: 0 0 25px rgba(217, 0, 255, 0.45);
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 35px rgba(217, 0, 255, 0.7);
+    }
+
+    /* Rezilta Kòd Liaison */
+    #result-box { display: none; }
+    .code-title {
+      color: #00f2fe;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+    }
+
+    .code-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 15px;
+    }
+
+    .digit-box {
+      width: 36px;
+      height: 48px;
+      background: #090620;
+      border: 1.5px solid #ff007a;
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 12px rgba(255, 0, 122, 0.5);
+    }
+
+    .separator {
+      color: #00f2fe;
+      font-size: 26px;
+      font-weight: bold;
+      margin: 0 4px;
+    }
+
+    .timer-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #a4a4c7;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .timer-ring {
+      width: 16px;
+      height: 16px;
+      border: 2px solid #00f2fe;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+
+    .btn-copy {
+      flex: 1;
+      background: linear-gradient(90deg, #00f2fe, #0077fe);
+      border: none;
+      padding: 12px;
+      border-radius: 12px;
+      color: #060216;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-retry {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid #bd00ff;
+      padding: 12px;
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      cursor: pointer;
+    }
+
+    /* Lis Enstriksyon */
+    .instructions {
+      text-align: left;
+      border-top: 1px dashed rgba(255, 255, 255, 0.15);
+      padding-top: 20px;
+      font-size: 14px;
+      color: #d1d1eb;
+    }
+
+    .instruction-step {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      width: 22px;
+      height: 22px;
+      background: #00f2fe;
+      color: #060216;
+      border-radius: 50%;
+      font-weight: bold;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .waiting-text {
+      color: #ff007a;
+      font-size: 13px;
+      margin-top: 15px;
+      text-align: center;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    /* Widget anba a (BOTS CONNECTÉS & LIAISONS) */
+    .stats-widget {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      flex: 1;
+      background: rgba(13, 8, 38, 0.85);
+      border: 1px solid #00f2fe;
+      border-radius: 16px;
+      padding: 14px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
+    }
+
+    .stat-val {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 26px;
+      font-weight: 900;
+      color: #00f2fe;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      font-family: 'Orbitron', sans-serif;
+      letter-spacing: 1.5px;
+      color: #a4a4c7;
+      text-transform: uppercase;
+    }
+
+    footer {
+      font-size: 12px;
+      color: #69698c;
+      letter-spacing: 1px;
+    }
+
+    footer span { color: #ff007a; font-weight: bold; }
+  </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>⚔️ ZORO MD PAIRING</h1>
-    <p>Entrez votre numéro WhatsApp avec l'indicatif de votre pays pour recevoir votre code de connexion.</p>
+  <div class="container">
+    <div class="card">
+      <div class="badge">● PAIRING CENTER</div>
+      <h1>ZORO-MD</h1>
+      <p class="subtitle">Lie ton WhatsApp au bot en 30 secondes ⚡</p>
 
-    <div class="input-group">
-        <label for="num">Numéro WhatsApp (ex: 50937123456)</label>
-        <input type="number" id="num" placeholder="Ex: 509XXXXXXXX" required>
+      <!-- Fòmilè Nimewo -->
+      <div id="form-section">
+        <div class="input-label">TON NUMÉRO WHATSAPP</div>
+        <div class="input-box">
+          <span>+</span>
+          <input type="tel" id="number" placeholder="50938744167" />
+        </div>
+        <p class="hint">Avec l'indicatif pays, sans le <b>+</b> ni les <b>0</b> du début.<br>Exemple Haïti : <b>50938744167</b></p>
+
+        <label class="checkbox-container">
+          <input type="checkbox" checked />
+          <span>Suivre la chaîne officielle ZORO-MD et réagir à ses publications avec mon bot</span>
+        </label>
+
+        <button class="btn" id="submit-btn" onclick="getCode()">GÉNÉRER MON CODE</button>
+      </div>
+
+      <!-- Rezilta Kòd -->
+      <div id="result-box">
+        <div class="code-title">TON CODE DE LIAISON</div>
+        <div class="code-row" id="code-digits"></div>
+
+        <div class="timer-row">
+          <div class="timer-ring"></div>
+          <span id="timer-text">Valable encore 2:00</span>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-copy" onclick="copyCode()">📋 COPIER</button>
+          <button class="btn-retry" onclick="resetForm()">🔄 NOUVEAU CODE</button>
+        </div>
+
+        <div class="instructions">
+          <div class="instruction-step">
+            <div class="step-num">1</div>
+            <div>Ouvre <b>WhatsApp</b> sur ton téléphone.</div>
+          </div>
+          <div class="instruction-step">
+            <div class="step-num">2</div>
+            <div>Va dans <b>Appareils connectés</b> (menu ⋮ ou Réglages).</div>
+          </div>
+          <div class="instruction-step">
+            <div class="step-num">3</div>
+            <div>Appuie sur <b>Associer un appareil</b>.</div>
+          </div>
+          <div class="instruction-step">
+            <div class="step-num">4</div>
+            <div>Choisis <b>« Associer avec le numéro de téléphone »</b> et tape le code ci-dessus.</div>
+          </div>
+          <div class="waiting-text">••• En attente de la liaison...</div>
+        </div>
+      </div>
     </div>
 
-    <button id="submitBtn" onclick="requestPairing()">Obtenir mon code</button>
-
-    <div id="codeBox">
-        <p style="color: #cbd5e1; font-size: 13px;">VOTRE CODE DE JUMELAGE :</p>
-        <div class="code-display" id="codeText">----</div>
-        <button class="copy-btn" onclick="copyCode()">Copier le code</button>
-        <p style="font-size: 12px; color: #64748b; margin-top: 12px;">Entrez ce code dans la notification WhatsApp reçue sur votre téléphone.</p>
+    <!-- Widget Stats -->
+    <div class="stats-widget">
+      <div class="stat-card">
+        <div class="stat-val" id="bots-count">18</div>
+        <div class="stat-label">BOTS CONNECTÉS</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="liaisons-count">0</div>
+        <div class="stat-label">LIAISONS EN COURS</div>
+      </div>
     </div>
-</div>
 
-<script>
-async function requestPairing() {
-    const numInput = document.getElementById('num');
-    const btn = document.getElementById('submitBtn');
-    const codeBox = document.getElementById('codeBox');
-    const codeText = document.getElementById('codeText');
-    const number = numInput.value.trim();
+    <footer>Propulsé par <span>ZORO-MD</span> · Digital Crew</footer>
+  </div>
 
-    if (!number) return alert("Veuillez entrer votre numéro !");
+  <script>
+    let rawCode = "";
+    let timerInterval;
 
-    btn.innerText = "Génération du code...";
-    btn.disabled = true;
+    async function getCode() {
+      const numInput = document.getElementById('number').value.trim();
+      if (!numInput) return alert('Tanpri mete yon nimewo!');
 
-    try {
-        const response = await fetch(`/pair?number=${number}`);
-        const data = await response.json();
+      const btn = document.getElementById('submit-btn');
+      btn.innerHTML = `<span style="display:inline-block; animation:spin 1s linear infinite;">⏳</span> GÉNÉRATION...`;
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/pair?number=' + numInput);
+        const data = await res.json();
 
         if (data.code) {
-            codeText.innerText = data.code;
-            codeBox.style.display = 'block';
+          rawCode = data.code;
+          displayCode(data.code);
+          startTimer(120);
+          document.getElementById('form-section').style.display = 'none';
+          document.getElementById('result-box').style.display = 'block';
         } else {
-            alert(data.error || "Une erreur est survenue !");
+          alert('Erè : ' + (data.error || 'Eseye ankò'));
+          btn.innerText = "GÉNÉRER MON CODE";
+          btn.disabled = false;
         }
-    } catch (e) {
-        alert("Impossible de contacter le serveur !");
-    } finally {
-        btn.innerText = "Obtenir mon code";
+      } catch (err) {
+        alert('Erè koneksyon ak sèvè a.');
+        btn.innerText = "GÉNÉRER MON CODE";
         btn.disabled = false;
+      }
     }
-}
 
-function copyCode() {
-    const code = document.getElementById('codeText').innerText;
-    navigator.clipboard.writeText(code);
-    alert("Code copié : " + code);
-}
-</script>
+    function displayCode(code) {
+      const container = document.getElementById('code-digits');
+      container.innerHTML = '';
+      const chars = code.replace(/[^a-zA-Z0-9]/g, '').split('');
 
+      chars.forEach((c, index) => {
+        if (index === 4) {
+          const sep = document.createElement('div');
+          sep.className = 'separator';
+          sep.innerText = '-';
+          container.appendChild(sep);
+        }
+        const box = document.createElement('div');
+        box.className = 'digit-box';
+        box.innerText = c;
+        container.appendChild(box);
+      });
+    }
+
+    function startTimer(seconds) {
+      clearInterval(timerInterval);
+      const timerEl = document.getElementById('timer-text');
+      timerInterval = setInterval(() => {
+        seconds--;
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        timerEl.innerText = `Valable encore ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        if (seconds <= 0) {
+          clearInterval(timerInterval);
+          timerEl.innerText = "Code expiré";
+        }
+      }, 1000);
+    }
+
+    function copyCode() {
+      navigator.clipboard.writeText(rawCode);
+      alert('Code copié : ' + rawCode);
+    }
+
+    function resetForm() {
+      clearInterval(timerInterval);
+      document.getElementById('form-section').style.display = 'block';
+      document.getElementById('result-box').style.display = 'none';
+      const btn = document.getElementById('submit-btn');
+      btn.innerText = "GÉNÉRER MON CODE";
+      btn.disabled = false;
+    }
+  </script>
 </body>
 </html>

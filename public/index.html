@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoro MD - Site de Jumelage</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: #0b0f19;
+            color: #f8fafc;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            background: #151d30;
+            border: 1px solid #1e293b;
+            padding: 35px 25px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 { font-size: 24px; color: #38bdf8; margin-bottom: 8px; }
+        p { font-size: 14px; color: #94a3b8; line-height: 1.5; }
+        .input-group { margin: 25px 0 15px; text-align: left; }
+        label { font-size: 13px; color: #cbd5e1; margin-bottom: 5px; display: block; }
+        input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            background: #0b0f19;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+        }
+        input:focus { border-color: #38bdf8; }
+        button {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            background: #38bdf8;
+            color: #0b0f19;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover { background: #0284c7; }
+        button:disabled { background: #475569; cursor: not-allowed; }
+        #codeBox {
+            display: none;
+            margin-top: 25px;
+            padding: 18px;
+            background: #0b0f19;
+            border: 2px dashed #38bdf8;
+            border-radius: 12px;
+        }
+        .code-display {
+            font-size: 28px;
+            letter-spacing: 5px;
+            font-weight: 800;
+            color: #4ade80;
+            margin: 10px 0;
+            user-select: all;
+        }
+        .copy-btn {
+            background: #334155;
+            color: white;
+            font-size: 13px;
+            padding: 8px 15px;
+            margin-top: 5px;
+            border-radius: 6px;
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>⚔️ ZORO MD PAIRING</h1>
+    <p>Entrez votre numéro WhatsApp avec l'indicatif de votre pays pour recevoir votre code de connexion.</p>
+
+    <div class="input-group">
+        <label for="num">Numéro WhatsApp (ex: 50937123456)</label>
+        <input type="number" id="num" placeholder="Ex: 509XXXXXXXX" required>
+    </div>
+
+    <button id="submitBtn" onclick="requestPairing()">Obtenir mon code</button>
+
+    <div id="codeBox">
+        <p style="color: #cbd5e1; font-size: 13px;">VOTRE CODE DE JUMELAGE :</p>
+        <div class="code-display" id="codeText">----</div>
+        <button class="copy-btn" onclick="copyCode()">Copier le code</button>
+        <p style="font-size: 12px; color: #64748b; margin-top: 12px;">Entrez ce code dans la notification WhatsApp reçue sur votre téléphone.</p>
+    </div>
+</div>
+
+<script>
+async function requestPairing() {
+    const numInput = document.getElementById('num');
+    const btn = document.getElementById('submitBtn');
+    const codeBox = document.getElementById('codeBox');
+    const codeText = document.getElementById('codeText');
+    const number = numInput.value.trim();
+
+    if (!number) return alert("Veuillez entrer votre numéro !");
+
+    btn.innerText = "Génération du code...";
+    btn.disabled = true;
+
+    try {
+        const response = await fetch(`/pair?number=${number}`);
+        const data = await response.json();
+
+        if (data.code) {
+            codeText.innerText = data.code;
+            codeBox.style.display = 'block';
+        } else {
+            alert(data.error || "Une erreur est survenue !");
+        }
+    } catch (e) {
+        alert("Impossible de contacter le serveur !");
+    } finally {
+        btn.innerText = "Obtenir mon code";
+        btn.disabled = false;
+    }
+}
+
+function copyCode() {
+    const code = document.getElementById('codeText').innerText;
+    navigator.clipboard.writeText(code);
+    alert("Code copié : " + code);
+}
+</script>
+
+</body>
+</html>
